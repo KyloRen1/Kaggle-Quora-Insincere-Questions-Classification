@@ -1,6 +1,6 @@
 import argparse
 import pandas as pd
-
+import gc
 from tqdm import tqdm
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -28,7 +28,7 @@ def add_text_features(data, text_col):
 	data['total_length'] = data[text_col].progress_apply(len)
 	data['capitals'] = data[text_col].progress_apply(lambda x: sum(1 for c in x if c.isupper()))
 	data['caps_vs_length'] = data.progress_apply(lambda row: float(row['capitals']) / float(row['total_length']), axis=1)
-	data['num_words'] = data.question_text.str.count('\S+')
+	data['num_words'] = data[text_col].str.count('\S+')
 	data['num_unique_words'] = data[text_col].progress_apply(lambda x: len(set(w for w in x.split())))
 	data['words_vs_unique'] = (data['num_unique_words'] / data['num_words'])
 	return data  
@@ -45,7 +45,6 @@ def text_features(train, test, text_col):
 	scaler.fit(np.vstack((train_features, test_features)))
 	train_features = scaler.transform(train_features)
 	test_features = scaler.transform(test_features)
-	print('===== Finished add text features =====')
 	return train, test, train_features, test_features
 
 def tokenize_text(train, test, text_col, target_col, max_features=120000, max_len=70):
@@ -60,7 +59,6 @@ def tokenize_text(train, test, text_col, target_col, max_features=120000, max_le
 	train_x = pad_sequences(train_x, maxlen=max_len)
 	test_x = pad_sequences(test_x, maxlen=max_len)
 	train_y = train[target_col].values
-	print('===== End of text tokenization =====')
 	return train_x, train_y, test_x, tokenizer.word_index
 
 if __name__ == '__main__':
@@ -74,10 +72,15 @@ if __name__ == '__main__':
 	train, test, train_features, test_features = text_features(train, test, args.text_column)
 
 	train_x, train_y, test_x, word_index = tokenize_text(train, test, args.text_column, args.target_column, args.max_features, args.max_len)
-	print(train.head(1))
-	print(train_features[0])
 
-	
+	print('===== Loading embeddings =====')
+	glove_embedding = load_embedding(word_index, 'glove', args.embeddings_folder, args.max_features)
+	paragram_embedding = load_embedding(word_index, 'paragram', args.embeddings_folder, args.max_features)
+	embedding_matrix = np.mean([glove_embedding, paragram_embedding], axis=0)
+	del glove_embedding, paragram_embedding
+	gc.collect()
+	print('Embedding shape: ', embedding_matrix.shape)
+
 
 
 
