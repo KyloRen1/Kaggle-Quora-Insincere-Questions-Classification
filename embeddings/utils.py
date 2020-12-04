@@ -27,7 +27,7 @@ def load_embedding(
     embedding_mean, embedding_std = all_embeddings.mean(), all_embeddings.std()
     embedding_size = all_embeddings.shape[1]
 
-    nb_words = min(max_features, len(word_index))
+    nb_words = min(max_features, len(word_index)) + 1
     embedding_matrix = np.random.normal(
         embedding_mean, embedding_std, (nb_words, embedding_size))
     for word, i in tqdm(word_index.items(),

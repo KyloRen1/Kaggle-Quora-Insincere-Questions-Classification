@@ -183,11 +183,12 @@ class NeuralNetwork(nn.Module):
             linear_hidden_size,
             num_capsule,
             dim_capsule,
+            device,
             embedding_dropout=0.1,
             dropout=0.1,
             max_len=70):
         super(NeuralNetwork, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, embedding_shape)
+        self.embedding = nn.Embedding(vocab_size + 1, embedding_shape)
         self.embedding.weight = nn.Parameter(
             torch.tensor(embedding_matrix, dtype=torch.float32))
         self.embedding.weight.requires_grad = False
@@ -220,6 +221,7 @@ class NeuralNetwork(nn.Module):
         self.linear_capsule = nn.Linear(num_capsule * dim_capsule, 1)
         self.linear = nn.Linear(hidden_size * 8 + 3, linear_hidden_size)
         self.out = nn.Linear(linear_hidden_size, 1)
+        self.device = device
 
     def forward(self, x):
         h_embedding = self.embedding(x[0])
@@ -242,7 +244,7 @@ class NeuralNetwork(nn.Module):
         average_pooling = torch.mean(output_gru, 1)
         max_pooling, _ = torch.max(output_gru, 1)
 
-        f = torch.tensor(x[1], dtype=torch.float).to(device)
+        f = torch.tensor(x[1], dtype=torch.float).to(self.device)
 
         concat = torch.cat(
             (output_lstm_attention,
