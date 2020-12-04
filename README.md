@@ -1,19 +1,14 @@
-# Kaggle: Quora Insincere Questions Classification
-This is the 59th place solution for Kaggle competition Quora: Insincere Questions Classification
+# Kaggle: Quora Insincere Questions Classification.
+
+This is the 59th place solution for the Kaggle competition Quora: Insincere Questions Classification.
 
 ## The Problem
 This was a binary classification problem where we were required to predict whether the question contains abusive content or not. More info here: https://www.kaggle.com/c/quora-insincere-questions-classification
 
-## Model and training
-
-__Preprocessing step__ <br\>
-&nbsp; 1. __Text preprocessing__: lowercase the text, remove punctuation, remove numbers, remove typical misspellings
-&nbsp; 2. __New features__: ratio of capital letters, ration of unique words
-
-### Model
-I have averaged GloVe and PARAGRAM embeddings and loaded this vector to `torch.nn.Embedding` layer. 
-
-
+## Model 
+The code of the model is located in `models\model.py`.
+The model architecture consists of a few layers:
+I have averaged GloVe and PARAGRAM embeddings and loaded this vector to the `torch.nn.Embedding` layer. the concatenation of `LSTM with Attention`, `GRU with Attention`, `GRU with MaxPooling`, `GRU with AveragePooling`, and `Capsule` layer (taken from here https://github.com/binzhouchn/capsule-pytorch) over GRU layer output. This concatenation is passed through the `Linear` layer with `ReLU` activation.
 
 ## Code
 To test the algorithm place `train.csv`, `test.csv`, `embeddings` in folder `data`. Afterwards run the following code:
