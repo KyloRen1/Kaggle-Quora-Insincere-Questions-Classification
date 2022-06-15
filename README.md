@@ -8,7 +8,7 @@ This was a binary classification problem where we were required to predict wheth
 ## Model 
 The code of the model is located in `models\model.py`.
 The model architecture consists of a few layers:
-I have averaged GloVe and PARAGRAM embeddings and loaded this vector to the `torch.nn.Embedding` layer. The concatenation of `LSTM with Attention`, `GRU with Attention`, `GRU with MaxPooling`, `GRU with AveragePooling`, and `Capsule` layer (taken from here https://github.com/binzhouchn/capsule-pytorch) over GRU layer output was passed through the `Linear` layer with `ReLU` activation. 
+I have averaged GloVe and PARAGRAM embeddings and loaded this vector to the `torch.nn.Embedding` layer. The concatenation of `LSTM with Attention`, `GRU with Attention`, `GRU with MaxPooling`, `GRU with AveragePooling`, and `Capsule` layer (taken from here https://github.com/binzhouchn/capsule-pytorch) over GRU layer. Head output is composed of the `Linear` layer with `ReLU` activation and a `Linear` layer. 
 
 This model reaches an F1-score of 0.69764 in Public and 0.70489 in Private leaderboards
 
